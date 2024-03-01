@@ -47,7 +47,7 @@ def attack(text_ls,
     if true_label != orig_label:
         running_time = round(time.time() - start_time, 2)
         # perturbed_text, perturbed_semantic_sim, orig_label, orig_probs, perturbed_label, perturbed_probs, translated_words, running_time
-        orig_probs = np.round(orig_probs.detach().cpu().numpy().tolist(),4)
+        orig_probs = np.round(orig_probs.detach().to(torch.float32).cpu().numpy().tolist(),4)
         return original_text, 1.000, orig_label, orig_probs, orig_label, orig_probs,'', running_time
     else:
         text_ls = splitted_text
@@ -70,7 +70,7 @@ def attack(text_ls,
             leave_1_probs = torch.tensor(np.array(leave_1_probs)).to("cuda:0")
         else:
             leave_1_probs_argmax, leave_1_probs, _ = logit_prob(leave_1_texts, predictor, tokenizer,batch=True)
-            leave_1_probs = torch.tensor(np.array(leave_1_probs.detach().cpu().numpy())).to("cuda:0")
+            leave_1_probs = torch.tensor(np.array(leave_1_probs.detach().to(torch.float32).cpu().numpy())).to("cuda:0")
         
         orig_prob_extended=np.empty(len_text)
         orig_prob_extended.fill(orig_prob)
@@ -144,8 +144,8 @@ def attack(text_ls,
         
         perturbed_label, perturbed_probs, perturbed_prob = logit_prob(perturbed_text, predictor, tokenizer)
         
-        orig_probs = np.round(orig_probs.detach().cpu().numpy().tolist(),4)
-        perturbed_probs = np.round(perturbed_probs.detach().cpu().numpy().tolist(),4)
+        orig_probs = np.round(orig_probs.detach().to(torch.float32).cpu().numpy().tolist(),4)
+        perturbed_probs = np.round(perturbed_probs.detach().to(torch.float32).cpu().numpy().tolist(),4)
         
         running_time = round(time.time() - start_time, 4)
         

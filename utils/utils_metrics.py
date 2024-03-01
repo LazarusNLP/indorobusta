@@ -4,7 +4,7 @@ import os
 # os.system('pip install conlleval')
 import itertools
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score
-from conlleval import evaluate
+# from conlleval import evaluate
 
 def emotion_detection_metrics_fn(list_hyp, list_label):
     metrics = {}

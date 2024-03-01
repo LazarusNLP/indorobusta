@@ -1,5 +1,5 @@
 import numpy as np
-import jax.numpy as jnp
+# import jax.numpy as jnp
 import tensorflow as tf
 tf.compat.v1.enable_eager_execution()
 import tensorflow_hub as hub

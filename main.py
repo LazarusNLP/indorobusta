@@ -9,7 +9,7 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 # torch.cuda.set_device(device)
 
 from sklearn.metrics import accuracy_score
-import swifter
+# import swifter
 import torch
 device = torch.device("cuda")
 

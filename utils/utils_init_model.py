@@ -39,7 +39,7 @@ def logit_prob(text_ls, predictor, tokenizer, batch=False):
             # ic(logits)
             orig_label = [t.squeeze().item() for t in torch.topk(logits, k=1, dim=-1)[1]]
             orig_probs = F.softmax(logits, dim=-1).squeeze()
-            orig_prob = [F.softmax(logits, dim=-1).squeeze()[idx][label].detach().cpu().numpy() for idx, label in enumerate(orig_label)]
+            orig_prob = [F.softmax(logits, dim=-1).squeeze()[idx][label].detach().to(torch.float32).cpu().numpy() for idx, label in enumerate(orig_label)]
         else:
             subwords = tokenizer.encode(text_ls)
             subwords = torch.LongTensor(subwords).view(1, -1).to(predictor.device)
@@ -48,7 +48,7 @@ def logit_prob(text_ls, predictor, tokenizer, batch=False):
             orig_label = torch.topk(logits, k=1, dim=-1)[1].squeeze().item()
 
             orig_probs = F.softmax(logits, dim=-1).squeeze()
-            orig_prob = F.softmax(logits, dim=-1).squeeze()[orig_label].detach().cpu().numpy()
+            orig_prob = F.softmax(logits, dim=-1).squeeze()[orig_label].detach().to(torch.float32).cpu().numpy()
     
     return orig_label, orig_probs, orig_prob
 
@@ -130,6 +130,18 @@ def init_model(id_model, downstream_task, seed):
         
         # model = BertForSequenceClassification.from_pretrained("indobenchmark/indobert-large-p2", config=config)
         model = BertForSequenceClassification.from_pretrained(os.getcwd() + r"/models/seed"+str(seed) + "/"+str(id_model)+"-"+str(downstream_task))
+    
+    else:
+        tokenizer = BertTokenizer.from_pretrained(id_model)
+        config = BertConfig.from_pretrained(id_model)
+        if downstream_task == "sentiment":
+            config.num_labels = DocumentSentimentDataset.NUM_LABELS
+        elif downstream_task == "emotion":
+            config.num_labels = EmotionDetectionDataset.NUM_LABELS
+        else:
+            return "Task does not match"
+        
+        model = BertForSequenceClassification.from_pretrained(id_model, config=config, torch_dtype=torch.bfloat16)
     
     return tokenizer, config, model
 
